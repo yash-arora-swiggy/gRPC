@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"time"
 
 	"github.com/yash-arora-swiggy/gRPC/calculator"
 	"google.golang.org/grpc"
 )
 
 type server struct {
-	calculator.CalculatorServiceServer
+	calculator.UnimplementedCalculatorServiceServer
 }
 
 func (*server) Sum(ctx context.Context, req *calculator.SumRequest) (resp *calculator.SumResponse, err error) {
@@ -25,6 +26,42 @@ func (*server) Sum(ctx context.Context, req *calculator.SumRequest) (resp *calcu
 		Sum: res,
 	}
 	return resp, nil
+}
+
+func (*server) Prime(req *calculator.PrimeNumbersRequest, resp calculator.CalculatorService_PrimeServer) error {
+
+	fmt.Println("Prime Numbers function invoked for server side streaming")
+	for i := 2; i <= int(req.Number); i++ {
+		if isPrime(i) {
+			res := calculator.PrimeNumbersResponse{
+				PrimeNum: int64(i),
+			}
+			time.Sleep(1000 * time.Millisecond)
+			resp.Send(&res)
+		}
+	}
+	return nil
+
+}
+
+func isPrime(n int) bool {
+	if n <= 1 {
+		return false
+	}
+	if n <= 3 {
+		return true
+	}
+
+	if n%2 == 0 || n%3 == 0 {
+		return false
+	}
+
+	for i := 5; i*i <= n; i = i + 6 {
+		if n%i == 0 || n%(i+2) == 0 {
+			return false
+		}
+	}
+	return true
 }
 
 func main() {

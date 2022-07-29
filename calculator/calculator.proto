@@ -11,6 +11,37 @@ message SumResponse {
 	int64 sum =1;
 }
 
-service CalculatorService {
-  rpc Sum(SumRequest) returns (SumResponse);
+message PrimeNumbersRequest {
+  int64 number = 1;
+}
+
+message PrimeNumbersResponse {
+  int64 primeNum = 1;
+}
+
+message AverageRequest {
+  int64 num = 1;
+}
+
+message AverageResponse {
+  int64 avg = 1;
+}
+
+message MaxNumberRequest {
+  int64 num  = 1;
+}
+
+message MaxNumberResponse {
+  int64 max = 1;
+}
+
+service CalculatorService{
+
+  rpc Sum(SumRequest) returns (SumResponse) {};
+
+  rpc Prime(PrimeNumbersRequest) returns (stream PrimeNumbersResponse) {};
+
+  rpc Average(stream AverageRequest) returns (AverageResponse) {};
+
+  rpc MaxNumber(stream MaxNumberRequest) returns (stream MaxNumberResponse) {};
 }
